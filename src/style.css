@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --font-Rubik: "Rubik", sans-serif;
+}
+
+:root {
+  color-scheme: light dark;
+  background-color: #1E1E2E;
+}
+
+canvas {
+  border: 1px solid black;
+}
