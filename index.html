@@ -15,10 +15,14 @@
         <h1 class="text-4xl">Blackjack Hi-Lo</h1>
       </header>
 
-      <section class="justify-center items-center flex w-full h-full flex-col gap-16">
-        <canvas id="canvas" width="1000" height="480" class="m-5">
+      <section class="justify-center items-center flex w-full h-full flex-col gap-3">
+        <canvas id="canvas" width="1000" height="550" class="m-5">
           Blackjack game
         </canvas>
+        <div class="flex flex-row gap-10">
+          <button class="bg-red-700 w-32 h-10 rounded-2xl" id="drawButton">Draw</button>
+          <button class="bg-blue-700 w-32 h-10 rounded-2xl" id ="settleButton">Settle</button>
+        </div>
       </section>
 
       
@@ -43,7 +47,6 @@
       </a>      
     </footer>
     
-
+    <script type="module" src="/src/main.ts"></script>
   </body>
-  <script type="module" src="/src/main.ts"></script>
 </html>
