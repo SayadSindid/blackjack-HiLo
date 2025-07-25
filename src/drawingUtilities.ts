@@ -17,17 +17,26 @@ export function createRoundedRectangle(x: number, y: number, ratio: number = 4) 
     return;
 }
 
-export function drawCard(deck: Card[], x: number, y: number, cardPicker: "player"| "dealer",ratio: number = 4) {
+// There is no way this implementation is good
+export function drawCard(deck: Card[], x: number, y: number, cardPicker: "player"| "dealer",ratio: number = 4, reconstruct: boolean = false, symbol?: Symbols, num?: CardNumber) {
     // Card base resolution = W: 84, H: 124.
     // Greatest common factor is 21:31.
 
     // -- MAIN LOGIC CARD DRAW --
-    const [cardNumber, cardSymbol] = getCardFromDeck(deck);
     createRoundedRectangle(x, y, ratio);
-    gameState.push(addNewCardState(cardPicker, x, y, ratio, cardNumber, cardSymbol));
-    const { xOffset, yOffset } = offsetCalculation(cardNumber);
-    initializeNewImage<Symbols>(loadedSymbolsImages, cardSymbol, x, y, xOffset, yOffset, ratio);
-    ctx.restore()
+    if (!reconstruct) {
+        const [cardNumber, cardSymbol] = getCardFromDeck(deck);
+        gameState.push(addNewCardState(cardPicker, x, y, ratio, cardNumber, cardSymbol));
+        const { xOffset, yOffset } = offsetCalculation(cardNumber);
+        initializeNewImage<Symbols>(loadedSymbolsImages, cardSymbol, x, y, xOffset, yOffset, ratio);
+        ctx.restore()
+    } else if (symbol && num) {
+        gameState.push(addNewCardState(cardPicker, x, y, ratio, num, symbol, false));
+        const { xOffset, yOffset } = offsetCalculation(num);
+        initializeNewImage<Symbols>(loadedSymbolsImages, symbol, x, y, xOffset, yOffset, ratio);
+        ctx.restore()
+    
+    }
     // -- MAIN LOGIC CARD DRAW --
 
     function getCardFromDeck(deck: Card[]) {

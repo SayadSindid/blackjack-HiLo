@@ -12,6 +12,7 @@ const drawButton = document.getElementById("drawButton");
 const settleButton = document.getElementById("settleButton");
 
 
+
 // Object with key/value as Symbols: HTMlImage.
 export const loadedSymbolsImages = await loadAllImage<Symbols>(linkSymbolImage);
 export const loadedBackImages = await loadAllImage<string>(linkBackImage);
@@ -27,9 +28,13 @@ export const loadedBackImages = await loadAllImage<string>(linkBackImage);
 // FIXME: Introduce/modify current state management in order to know what has been drawn.
 
 export let gameState: GameStateType[] = [];
-export let scorePlayer = 0;
-export let scoreDealer = 0;
 
+const deck = shuffle(createDeck());
+
+export let score = {
+    dealer: 0,
+    player: 0,
+}
 
 async function draw() {
 
@@ -39,16 +44,18 @@ async function draw() {
 
     if (!drawButton) throw new Error("Couldn't initialize draw Button")
     if (!settleButton) throw new Error("Couldn't initialize settle Button")
-        
+
+
+
+
 
     let xCurrentPlayerCardPos = 475;
     let yCurrentPlayerCardPos = 375;
-
+    let xCurrentDealerCardPos = 412;
+    let yCurrentDealerCardPos = 20;
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    let deck = shuffle(createDeck());
 
     ctx.fillStyle = "rgb(200 0 0)";
     ctx.fillRect(25,25, 100, 100);
@@ -71,14 +78,68 @@ async function draw() {
     }
 
     startingState();
+    console.log(score.dealer, score.player)
 
     drawButton.addEventListener("click", function () {
         xCurrentPlayerCardPos += 25;
         yCurrentPlayerCardPos -= 25;
         drawCard(deck, xCurrentPlayerCardPos, yCurrentPlayerCardPos, "player");
+        if (score.player > 21) {
+            // GAME OVER
+        }
     })
 
+    settleButton.addEventListener("click", function () {
+        // TODO: Don't forgot to enable it when re-starting a new game.
+        drawButton.setAttribute("disabled", "disabled");
+        if (!gameState.some(value => value.cardType === "back")) {
+            console.log("gg")
+            return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBackDeck(800, 50);
+        const tempGameState = gameState;
+        gameState = [];
+        for (let i = 0;i < tempGameState.length;i++) {
+            const card = tempGameState[i];
+            if (card.cardType === "back") {
+                continue;
+            }
+            drawCard(deck, card.xPos, card.yPos, card.cardType, card.ratio, true, card.symbol, card.cardNumber)
+        }
 
+        makeDealerPlay();
+
+        return;
+    })
+
+    
+    
+    function makeDealerPlay() {
+        
+        if (score.dealer < 17 ) {
+            const dealerPlaying = setInterval(function () {
+                if (score.dealer >= 21) {
+                    clearInterval(dealerPlaying);
+                } else if (score.dealer > score.player) {
+                    clearInterval(dealerPlaying);
+                } else {
+                    xCurrentDealerCardPos -= 100;
+                    drawCard(deck, xCurrentDealerCardPos, yCurrentDealerCardPos, "dealer");
+                }
+            }, 1500)
+        }
+        // TODO: What happens if the hand of the player is > 17 and < 21 and the dealer hand too does he draw? 
+        // TODO: Finish this
+        function compareScore() {
+            if (score.dealer > score.player) {
+                return "dealer";
+            } else if (score.dealer < score.player) {
+                return score.player
+            }
+        }
+
+    }
 
     return;
 
