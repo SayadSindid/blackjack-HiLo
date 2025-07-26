@@ -1,7 +1,7 @@
 import { ctx } from "./main";
 import { loadedBackImages, loadedSymbolsImages, gameState } from "./main";
 import type { Symbols, CardNumber, Card } from "./definitions";
-import { addNewCardState } from "./gameState";
+import { addNewCardState, cardCounting } from "./gameState";
 
 export function createRoundedRectangle(x: number, y: number, ratio: number = 4) {
     const WidthCard = 21 * ratio;
@@ -26,6 +26,7 @@ export function drawCard(deck: Card[], x: number, y: number, cardPicker: "player
     createRoundedRectangle(x, y, ratio);
     if (!reconstruct) {
         const [cardNumber, cardSymbol] = getCardFromDeck(deck);
+        cardCounting(cardNumber);
         gameState.push(addNewCardState(cardPicker, x, y, ratio, cardNumber, cardSymbol));
         const { xOffset, yOffset } = offsetCalculation(cardNumber);
         initializeNewImage<Symbols>(loadedSymbolsImages, cardSymbol, x, y, xOffset, yOffset, ratio);
@@ -36,6 +37,8 @@ export function drawCard(deck: Card[], x: number, y: number, cardPicker: "player
         initializeNewImage<Symbols>(loadedSymbolsImages, symbol, x, y, xOffset, yOffset, ratio);
         ctx.restore()
     
+    } else {
+        ctx.restore();
     }
     // -- MAIN LOGIC CARD DRAW --
 

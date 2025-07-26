@@ -1,5 +1,5 @@
-import type { CardNumber, Symbols, GameStateType } from "./definitions";
-import { score } from "./main";
+import type { CardNumber, Symbols } from "./definitions";
+import { score, scoreDealerVisual, scorePlayerVisual, globalScoreDealer, globalScorePlayer, counting } from "./main";
 
 export function addNewCardState(type: "player" | "dealer" | "back", x: number, y: number, ratio: number = 4, cardNumber?: CardNumber, symbol?: Symbols, updateScore: boolean = true) {
     let numberToAdd: number = 0;
@@ -32,7 +32,7 @@ export function addNewCardState(type: "player" | "dealer" | "back", x: number, y
             }
             
                 if (type !== "back" && cardNumber) {
-                updateVisualScore(type);
+                updateVisualScore(type, "hands");
             }
         }
 
@@ -47,22 +47,39 @@ export function addNewCardState(type: "player" | "dealer" | "back", x: number, y
     }
 }
 
-export function cleanState(gameState: GameStateType[], scorePlayer: number, scoreDealer: number) {
-    gameState = [];
-    scorePlayer = 0;
-    scoreDealer = 0;
+export function updateVisualScore(type: "dealer" | "player" | "tie", scope: "global" | "hands") {
+
+    if (scope === "hands") {
+        if (type === "dealer") {
+            scoreDealerVisual.innerText = (score.dealer).toString();
+        } else {
+            scorePlayerVisual.innerText = (score.player).toString();
+        }
+    } else {
+        if (type === "dealer") {
+            let currentScore = Number(globalScoreDealer.innerText);
+            globalScoreDealer.innerText = (currentScore += 1).toString();
+        } else if (type === "player") {
+            let currentScore = Number(globalScorePlayer.innerText);
+            globalScorePlayer.innerText = (currentScore += 1).toString();
+        } 
+    }
+    // do nothing if tie.
     return;
 }
 
-function updateVisualScore(type: "dealer" | "player") {
-    const scoreDealerVisual = document.getElementById("scoreDealer") as HTMLSpanElement;
-    const scorePlayerVisual = document.getElementById("scorePlayer")  as HTMLSpanElement;
-
-    if (type === "dealer") {
-        scoreDealerVisual.innerText = (score.dealer).toString();
-    } else {
-        scorePlayerVisual.innerText = (score.player).toString();
+// Any strategy can be hard coded here.
+// What could be done is having a strategy argument and having multiple counting strategy and chosing at will.
+export function cardCounting(num: number) {
+    if (num > 2 && num < 7) {
+        counting.counter += 1;
+    } if (num >= 10 || num === 1) {
+        counting.counter -= 1;
     }
+
+    const visualCountingIndicator = document.getElementById("cardCountingCounter") as HTMLSpanElement;
+
+    visualCountingIndicator.innerText = counting.counter.toString();
 
     return;
 }

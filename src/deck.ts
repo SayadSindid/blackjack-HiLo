@@ -20,7 +20,7 @@ export function createDeck() {
 }
 
 export function shuffle(deck: Card[]) {
-    // TODO: Look into Fisher-Yates Shuffle
+    // Fisher-Yates Shuffle implementation.
     let j: number;
     const lengthDeck = deck.length;
     for (let i = 0;i < lengthDeck;i++) {
